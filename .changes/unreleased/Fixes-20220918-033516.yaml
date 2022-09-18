@@ -1,0 +1,7 @@
+kind: Fixes
+body: Add proper stringification of messages handed to loggers to prevent json serialization errors.
+time: 2022-09-18T03:35:16.329883-07:00
+custom:
+  Author: versusfacit
+  Issue: "5436"
+  PR: "5874"
