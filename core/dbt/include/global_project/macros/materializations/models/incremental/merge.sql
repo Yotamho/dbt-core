@@ -9,6 +9,7 @@
     {%- set merge_exclude_columns = config.get('merge_exclude_columns') -%}
     {%- set update_columns = get_merge_update_columns(merge_update_columns, merge_exclude_columns, dest_columns) -%}
     {%- set sql_header = config.get('sql_header', none) -%}
+    {%- set merge_condition = config.get('merge_condition', none) -%}
 
     {% if unique_key %}
         {% if unique_key is sequence and unique_key is not mapping and unique_key is not string %}
@@ -27,7 +28,6 @@
     {% else %}
         {% do predicates.append('FALSE') %}
     {% endif %}
-
     {{ sql_header if sql_header is not none }}
 
     merge into {{ target }} as DBT_INTERNAL_DEST
@@ -35,7 +35,7 @@
         on {{ predicates | join(' and ') }}
 
     {% if unique_key %}
-    when matched then update set
+    when matched {{ ('and ' + merge_condition) if merge_condition }} then update set
         {% for column_name in update_columns -%}
             {{ column_name }} = DBT_INTERNAL_SOURCE.{{ column_name }}
             {%- if not loop.last %}, {%- endif %}
